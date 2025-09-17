@@ -45,4 +45,25 @@ class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
         ];
     }
+    public function emailVerifications()
+{
+    return $this->hasMany(EmailVerification::class);
+}
+public function sendEmailVerificationNotification() 
+{
+    \Log::info('VERIFICATION EMAIL TRIGGERED for user: ' . $this->email);
+    
+    
+    $code = rand(100000, 999999);
+    
+    
+    EmailVerification::create([
+        'user_id' => $this->id,
+        'code' => $code,
+        'expire_date' => now()->addMinutes(15)
+    ]);
+    
+    
+    $this->notify(new \App\Notifications\VerifyEmailWithCode($code));
+}
 }
