@@ -1,38 +1,89 @@
-// Components
-import EmailVerificationNotificationController from '@/actions/App/Http/Controllers/Auth/EmailVerificationNotificationController';
-import { logout } from '@/routes';
-import { Form, Head } from '@inertiajs/react';
+import { Head, useForm, router } from '@inertiajs/react';
 import { LoaderCircle } from 'lucide-react';
 
-import TextLink from '@/components/text-link';
-import { Button } from '@/components/ui/button';
 import AuthLayout from '@/layouts/auth-layout';
+import { Button } from '@/components/ui/button';
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSeparator,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
+import { route } from 'ziggy-js';
 
-export default function VerifyEmail({ status }: { status?: string }) {
-    return (
-        <AuthLayout title="Verify email" description="Please verify your email address by clicking on the link we just emailed to you.">
-            <Head title="Email verification" />
+export default function VerifyEmail({ status }) {
+  // Inertia form state
+  const { data, setData, post, processing, errors } = useForm({
+    code: '', // OTP input
+  });
 
-            {status === 'verification-link-sent' && (
-                <div className="mb-4 text-center text-sm font-medium text-green-600">
-                    A new verification link has been sent to the email address you provided during registration.
-                </div>
-            )}
+  const submit = (e) => {
+  e.preventDefault();
+  post(route('verification.verify-otp'), {
+    onSuccess: () => setData('code', ''), 
+    onError: (errors) => console.log(errors), 
+  });
+};
 
-            <Form {...EmailVerificationNotificationController.store.form()} className="space-y-6 text-center">
-                {({ processing }) => (
-                    <>
-                        <Button disabled={processing} variant="secondary">
-                            {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
-                            Resend verification email
-                        </Button>
 
-                        <TextLink href={logout()} className="mx-auto block text-sm">
-                            Log out
-                        </TextLink>
-                    </>
-                )}
-            </Form>
-        </AuthLayout>
-    );
+  const handleLogout = (e) => {
+    e.preventDefault();
+    router.post(route('logout'));
+  };
+
+  return (
+    <AuthLayout
+      title="Verify Email"
+      description="Enter the 6-digit code we sent to your email."
+    >
+      <Head title="Email Verification" />
+
+      <form onSubmit={submit} className="space-y-6 text-center mt-6">
+        {/* OTP Input */}
+        <InputOTP
+          maxLength={6}
+          value={data.code}
+          onChange={(value) => setData('code', value)}
+        >
+          <InputOTPGroup>
+            <InputOTPSlot index={0} />
+            <InputOTPSlot index={1} />
+            <InputOTPSlot index={2} />
+          </InputOTPGroup>
+          <InputOTPSeparator />
+          <InputOTPGroup>
+            <InputOTPSlot index={3} />
+            <InputOTPSlot index={4} />
+            <InputOTPSlot index={5} />
+          </InputOTPGroup>
+        </InputOTP>
+
+        {/* Display validation error */}
+        {errors.code && (
+          <p className="text-sm text-red-500">{errors.code}</p>
+        )}
+
+        {/* Verify Button */}
+        <Button
+          type="submit"
+          variant="secondary"
+          disabled={processing}
+        >
+          {processing && (
+            <LoaderCircle className="h-4 w-4 animate-spin mr-2" />
+          )}
+          {processing ? 'Verifying...' : 'Verify'}
+        </Button>
+
+        {/* Logout Button */}
+        <Button
+          type="button"
+          variant="outline"
+          onClick={handleLogout}
+        >
+          Logout
+        </Button>
+      </form>
+    </AuthLayout>
+  );
 }

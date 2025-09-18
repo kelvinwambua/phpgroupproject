@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 
 class VerifyEmailController extends Controller
 {
@@ -21,4 +22,34 @@ class VerifyEmailController extends Controller
 
         return redirect()->intended(route('dashboard', absolute: false).'?verified=1');
     }
+    public function verifyOtp(Request $request)
+{
+    $request->validate([
+        'code' => 'required|string',
+    ]);
+
+    $user = $request->user();
+
+    $record = \App\Models\EmailVerification::where('user_id', $user->id)
+        ->where('code', $request->code)
+        ->latest()
+        ->first();
+
+    if (!$record) {
+        return back()->withErrors(['code' => 'Invalid code.']);
+    }
+
+    if (now()->greaterThan($record->expire_date)) {
+        return back()->withErrors(['code' => 'Code expired.']);
+    }
+
+    if (!$user->hasVerifiedEmail()) {
+        $user->markEmailAsVerified(); 
+    }
+
+    $record->delete();
+
+    return redirect()->route('dashboard')->with('status', 'Email verified!');
+}
+
 }

@@ -28,6 +28,7 @@ class EmailVerification extends Model
             ->where('expire_date', '>', now())
             ->get();
     }
+    
 
 
  
