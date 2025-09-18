@@ -22,7 +22,7 @@ class VerifyEmailController extends Controller
 
         return redirect()->intended(route('dashboard', absolute: false).'?verified=1');
     }
-    public function verifyOtp(Request $request)
+    public function verifyOtp(Request $request) : RedirectResponse
 {
     $request->validate([
         'code' => 'required|string',
@@ -46,6 +46,8 @@ class VerifyEmailController extends Controller
     if (!$user->hasVerifiedEmail()) {
         $user->markEmailAsVerified(); 
     }
+
+    session(['2fa_passed' => true]);
 
     $record->delete();
 

@@ -48,6 +48,16 @@ class LoginRequest extends FormRequest
             ]);
         }
 
+       $user = $this->user();
+
+    // Only allow login if email is verified
+    if (! $user->hasVerifiedEmail()) {
+        Auth::logout();
+        throw ValidationException::withMessages([
+            'email' => 'You must verify your email before logging in.',
+        ]);
+    } 
+
         RateLimiter::clear($this->throttleKey());
     }
 

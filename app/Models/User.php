@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+
+
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -66,4 +68,16 @@ public function sendEmailVerificationNotification()
     
     $this->notify(new \App\Notifications\VerifyEmailWithCode($code));
 }
+public function sendTwoFactorCode()
+{
+    $code = rand(100000, 999999);
+    
+    \App\Models\EmailVerification::create([
+        'user_id' => $this->id,
+        'code' => $code,
+        'expire_date' => now()->addMinutes(10),
+    ]);
+
+    $this->notify(new \App\Notifications\TwoFactorCodeNotification($code));
+} 
 }
