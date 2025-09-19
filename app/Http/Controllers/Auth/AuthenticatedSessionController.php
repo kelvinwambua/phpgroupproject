@@ -33,7 +33,16 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        // Generate OTP and send it to user email
+        $user = Auth::user();
+
+        $user->sendTwoFactorCode();
+        
+        Auth::logout();
+
+        session(['2fa:user:id' => $user->id]);
+
+        return redirect()->route('2fa.index')->with('status', 'OTP sent to your email. Please verify to continue.');
     }
 
     /**
