@@ -11,13 +11,13 @@ import {
 } from "@/components/ui/input-otp";
 import { route } from 'ziggy-js';
 
-export default function VerifyEmail({ status }) {
+export default function VerifyEmail() {
   // Inertia form state
   const { data, setData, post, processing, errors } = useForm({
     code: '', // OTP input
   });
 
-  const submit = (e) => {
+  const submit = (e: React.FormEvent<HTMLFormElement>) => {
   e.preventDefault();
   post(route('verification.verify-otp'), {
     onSuccess: () => setData('code', ''), 
@@ -26,7 +26,7 @@ export default function VerifyEmail({ status }) {
 };
 
 
-  const handleLogout = (e) => {
+  const handleLogout = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     router.post(route('logout'));
   };

@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/input-otp";
 import { route } from 'ziggy-js';
 
-export default function VerifyTwoFactor({ status }) {
+export default function VerifyTwoFactor() {
   const { data, setData, post, processing, errors } = useForm({
     code: '',
   });
