@@ -26,8 +26,9 @@ class AuthenticationTest extends TestCase
             'password' => 'password',
         ]);
 
-        $this->assertAuthenticated();
-        $response->assertRedirect(route('dashboard', absolute: false));
+        // After login, user is redirected to 2FA page and logged out
+        $response->assertRedirect(route('2fa.index'));
+        $this->assertGuest();
     }
 
     public function test_users_can_not_authenticate_with_invalid_password()
