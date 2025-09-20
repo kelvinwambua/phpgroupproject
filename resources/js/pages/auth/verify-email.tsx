@@ -38,25 +38,27 @@ export default function VerifyEmail({ status }) {
     >
       <Head title="Email Verification" />
 
-      <form onSubmit={submit} className="space-y-6 text-center mt-6">
+      <form onSubmit={submit} className="flex flex-col items-center space-y-4">
         {/* OTP Input */}
-        <InputOTP
-          maxLength={6}
-          value={data.code}
-          onChange={(value) => setData('code', value)}
-        >
-          <InputOTPGroup>
-            <InputOTPSlot index={0} />
-            <InputOTPSlot index={1} />
-            <InputOTPSlot index={2} />
-          </InputOTPGroup>
-          <InputOTPSeparator />
-          <InputOTPGroup>
-            <InputOTPSlot index={3} />
-            <InputOTPSlot index={4} />
-            <InputOTPSlot index={5} />
-          </InputOTPGroup>
-        </InputOTP>
+        <div className="flex justify-center">
+          <InputOTP
+            maxLength={6}
+            value={data.code}
+            onChange={(value) => setData('code', value)}
+          >
+            <InputOTPGroup>
+              <InputOTPSlot index={0} />
+              <InputOTPSlot index={1} />
+              <InputOTPSlot index={2} />
+            </InputOTPGroup>
+            <InputOTPSeparator />
+            <InputOTPGroup>
+              <InputOTPSlot index={3} />
+              <InputOTPSlot index={4} />
+              <InputOTPSlot index={5} />
+            </InputOTPGroup>
+          </InputOTP>
+        </div>
 
         {/* Display validation error */}
         {errors.code && (
@@ -68,6 +70,7 @@ export default function VerifyEmail({ status }) {
           type="submit"
           variant="secondary"
           disabled={processing}
+          className="w-full"
         >
           {processing && (
             <LoaderCircle className="h-4 w-4 animate-spin mr-2" />
@@ -80,10 +83,12 @@ export default function VerifyEmail({ status }) {
           type="button"
           variant="outline"
           onClick={handleLogout}
+          className="w-full"
         >
           Logout
         </Button>
       </form>
+
     </AuthLayout>
   );
 }
